@@ -5,7 +5,7 @@ import SwiftUI
 struct JokoApp: App {
     var body: some Scene {
         WindowGroup {
-            GameView()
+            MainView()
         }
     }
 }

@@ -6,19 +6,21 @@ struct GameView: View {
     @State private var timeRemaining = 100
     @State private var timer: Timer?
     @Namespace private var animationNamespace
-
+    
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(gradient: Gradient(colors: [.pink, .purple]), startPoint: .topLeading, endPoint: .bottomTrailing)
+            Image("Slot-1") // Задаємо ваше зображення фону
+                .resizable()
+                .scaledToFill() // Заповнюємо доступний простір
                 .ignoresSafeArea()
-
+                .opacity(0.5) // Можна налаштувати прозорість, якщо потрібно
+            
             VStack {
                 Text("✨ Match 3 Game ✨")
                     .font(.custom("Chalkduster", size: 32))
                     .foregroundColor(.white)
                     .padding()
-
+                
                 HStack {
                     Text("⏱ Time: \(timeRemaining)")
                         .font(.title2)
@@ -29,17 +31,44 @@ struct GameView: View {
                         .foregroundColor(.white)
                 }
                 .padding(.horizontal)
+                
+                Spacer()
+                Spacer(minLength: 100)
+                
+                HStack(alignment: .center) {
+                    
+                    Spacer()
 
-                GeometryReader { geometry in
-                    GridView(game: game, namespace: animationNamespace, size: min(geometry.size.width, geometry.size.height) * 0.8)
-                        .frame(width: min(geometry.size.width, geometry.size.height) * 0.8, height: min(geometry.size.width, geometry.size.height) * 0.8)
-                        .padding(30)
-                        .background(Color.white)
-                        .cornerRadius(15)
-                        .shadow(radius: 5)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    
+                    GeometryReader { geometry in
+                        let totalPadding: CGFloat = 4 // Відступ з усіх боків
+                            let spacing: CGFloat = 3 // Відстань між клітинками
+//                            let boardWidth = min(geometry.size.width - totalPadding * 2, geometry.size.height) * 0.8 // Використовуйте ширину з відступами
+//                            let boardHeight = min(geometry.size.height - totalPadding * 2, geometry.size.width) * 0.8 // Використовуйте висоту з відступами
+
+                            // Обчислення cellSize
+                            //let cellWidth = (boardWidth - (CGFloat(game.columns - 1) * spacing)) / CGFloat(game.columns) // Розмір клітинки по ширині
+                            //let cellHeight = (boardHeight - (CGFloat(game.rows - 1) * spacing)) / CGFloat(game.rows) // Розмір клітинки по висоті
+
+                            // Обчислення adjustedBoardSize для ширини та висоти
+                            //let adjustedBoardWidth = cellWidth * CGFloat(game.columns) + (CGFloat(game.columns - 1) * spacing) + totalPadding * 2
+                           // let adjustedBoardHeight = cellHeight * CGFloat(game.rows) + (CGFloat(game.rows - 1) * spacing) + totalPadding * 2
+
+                            // Використовуйте adjustedBoardWidth і adjustedBoardHeight для background
+                        GridView(game: game, namespace: animationNamespace, size: UIScreen.main.bounds.width - 40)
+                                .padding(totalPadding) // Відстань між бордом та фоном
+                                .background(
+                                    Image("bgfedfrg") // Ваше зображення фону
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: UIScreen.main.bounds.width - 20, height: UIScreen.main.bounds.width + 330) // Встановлення розміру фону
+                                        .clipped() // Обрізаємо, щоб відповідати розмірам
+                                )
+                                .cornerRadius(25)
+                                .shadow(radius: 5)
+                    }
                 }
-
+                
                 Button(action: {
                     game.resetGame()
                     resetTimer()
@@ -62,7 +91,7 @@ struct GameView: View {
             timer?.invalidate()
         }
     }
-
+    
     func startTimer() {
         timeRemaining = 100
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
@@ -74,20 +103,23 @@ struct GameView: View {
             }
         }
     }
-
+    
     func resetTimer() {
         timer?.invalidate()
         startTimer()
     }
 }
 
+
+
 struct GridView: View {
     @ObservedObject var game: Match3GameViewModel
     var namespace: Namespace.ID
     var size: CGFloat
-
+    
     var body: some View {
-        let cellSize = size / CGFloat(game.columns)
+        let cellSize = (size - (CGFloat(game.columns) * 3)) / CGFloat(game.columns) // Враховуйте padding між клітинками
+        
         VStack(spacing: 0) {
             ForEach(0..<game.rows, id: \.self) { row in
                 HStack(spacing: 0) {
@@ -98,6 +130,7 @@ struct GridView: View {
                             .scaledToFit()
                             .frame(width: cellSize, height: cellSize)
                             .shadow(radius: 3)
+                            .padding(3) // Внутрішній відступ
                             .overlay(
                                 ZStack {
                                     if ball.isShaking {
@@ -124,5 +157,3 @@ struct GridView: View {
         }
     }
 }
-
-
