@@ -3,39 +3,63 @@ import SwiftUI
 
 class GameViewModel: ObservableObject {
     @Published var grid: [[Ball]]
-    @Published var score: Int = 0
+   // @Published var score: Int = 0
 
     let rows: Int =  6
     let columns: Int = 5
     let imageNames: [String] = ["asdfgdfh01", "asdfgdfh02", "asdfgdfh03", "asdfgdfh04", "asdfgdfh05", "asdfgdfh06", "asdfgdfh07", "asdfgdfh08"]
-    var boardSize: CGFloat = 300
-    private var lastMoveTime = Date()
     private var hintTimer: Timer?
     private var hintVisible = false
     
     @Published var selectedLevel: GameLevel
+    
+    
+    @Published var grass = (0, "asdfgdfh08")
+    @Published var carrot = (0, "asdfgdfh02")
+    @Published var corn = (0, "asdfgdfh01")
+    
+    private var gameTimer: Timer?
+    @Published var currentGameTime: CGFloat = 0.0
+    @Published var currentLevelScores: Int = 0
 
+    var onGameEnd: (() -> Void)?
 
     init(selectedLevel: GameLevel, isSE: Bool) {
         self.selectedLevel = selectedLevel
         self.grid = []
+        
+        currentGameTime = CGFloat(selectedLevel.timePerRound)
+        currentLevelScores = selectedLevel.scoresToWin
+        
         resetGame()
     }
-
+    
+    // MARK: - Timer
+    
     func resetGame() {
-        score = 0
+        currentGameTime = CGFloat(selectedLevel.timePerRound)
+        currentLevelScores = selectedLevel.scoresToWin
         grid = (0..<rows).map { _ in
             (0..<columns).map { _ in
                 Ball(imageName: imageNames.randomElement()!)
             }
         }
+        
         removeMatches()
         resetHintTimer()
+       
+        startGameTimer()
+    }
+    
+    func formattedGameTime() -> String {
+        let validTime = max(Int(currentGameTime), 0)
+        let minutes = validTime / 60
+        let seconds = validTime % 60 
+        return String(format: "%d:%02d", minutes, seconds)
     }
 
     func selectCell(row: Int, column: Int) {
         resetHints()
-        lastMoveTime = Date()
         resetHintTimer()
 
         let adjacentPositions = [
@@ -95,8 +119,10 @@ class GameViewModel: ObservableObject {
         let matches = findMatches()
 
         if !matches.isEmpty {
-            let matchedCount = matches.count
-            score += matchedCount * matchedCount
+            currentLevelScores -= 60
+            
+            updateSpecialItemCounts(for: matches)
+
 
             // Після 0.4 секунд починаємо видаляти матчі
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -121,6 +147,50 @@ class GameViewModel: ObservableObject {
         }
     }
 
+    
+    func updateSpecialItemCounts(for matches: Set<CellPosition>) {
+        print("___ updateSpecialItemCounts")
+        var countedElements = Set<String>()
+
+        for position in matches {
+            let imageName = grid[position.row][position.column].imageName
+            
+            if !countedElements.contains(imageName) {
+                if imageName == grass.1 {
+                    grass.0 += 1
+                } else if imageName == carrot.1 {
+                    carrot.0 += 1
+                } else if imageName == corn.1 {
+                    corn.0 += 1
+                }
+                countedElements.insert(imageName)
+            }
+        }
+    }
+    
+    func startGameTimer() {
+        gameTimer?.invalidate() // Зупиніть попередній таймер, якщо він існує
+        gameTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.updateGameTime()
+        }
+    }
+    
+    func updateGameTime() {
+        if currentGameTime > 0 {
+            currentGameTime -= 1 // Зменшує час на 1 секунду
+        } else {
+            // Закінчився час, виконуємо дію
+            endGame()
+        }
+    }
+    
+    func endGame() {
+        gameTimer?.invalidate()
+        gameTimer = nil
+       
+        onGameEnd?()
+    }
+    
     func findMatches() -> Set<CellPosition> {
         var matches = Set<CellPosition>()
 

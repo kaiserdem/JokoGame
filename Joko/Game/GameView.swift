@@ -1,10 +1,4 @@
-
-//                    Text("⏱ Time: \(timeRemaining)")
-//                        .font(.title2)
-//                        .foregroundColor(.white)
-//                    Spacer()
-//                    Text("🏆 Score: \(viewModel.score)")
-                   
+           
 import SwiftUI
 
 struct GameView: View {
@@ -15,11 +9,6 @@ struct GameView: View {
     @Binding var isLevelCompleted: Bool
     @Environment(\.presentationMode) var presentationMode
     private var levelIndex: Int
-    
-    var grass = 0
-    var carrot = 0
-    var corn = 0
-    
     
     private let isSE: Bool = UIScreen.main.bounds.height < 700
     
@@ -73,7 +62,7 @@ struct GameView: View {
                     
                     ZStack {
                         Image("Frame 1171277331")
-                        Text("\("index")")
+                        Text(viewModel.formattedGameTime())
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -82,7 +71,7 @@ struct GameView: View {
                     
                     ZStack {
                         Image("Group 19094-2")
-                        Text("\("index" )")
+                        Text("\(viewModel.currentLevelScores)")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -103,8 +92,8 @@ struct GameView: View {
                 //////////////////////////////
                 HStack(alignment: .center) {
                     VStack {
-                        Image("Frame 1171277315")
-                        Text("\(grass) Grass")
+                        Image("asdfgdfh08")
+                        Text("\(viewModel.grass.0) Grass")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -113,8 +102,8 @@ struct GameView: View {
                     Spacer().frame(width: 30) // Відстань між елементами
 
                     VStack {
-                        Image("Frame 1171277317")
-                        Text("\(carrot) Carrot")
+                        Image("asdfgdfh02")
+                        Text("\(viewModel.carrot.0) Carrot")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -123,8 +112,8 @@ struct GameView: View {
                     Spacer().frame(width: 30) // Відстань між елементами
 
                     VStack {
-                        Image("Frame 1171277319")
-                        Text("\(corn) Corn")
+                        Image("asdfgdfh01")
+                        Text("\(viewModel.corn.0) Corn")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
@@ -134,6 +123,11 @@ struct GameView: View {
 
                 ////////////////////////////
             }
+            .onAppear {
+                        viewModel.onGameEnd = {
+                            self.presentationMode.wrappedValue.dismiss() // Закриває вью
+                        }
+                    }
         }
     }
 }
