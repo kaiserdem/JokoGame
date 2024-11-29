@@ -2,10 +2,16 @@
 import SwiftUI
 
 struct GameView: View {
-    @StateObject private var game = Match3GameViewModel(rows: 6, columns: 5)
+    @StateObject private var viewModel: GameViewModel
     @State private var timeRemaining = 100
     @State private var timer: Timer?
     @Namespace private var animationNamespace
+    @Binding var isLevelCompleted: Bool
+
+    init(selectedLevel: GameLevel, isSE: Bool, isLevelCompleted: Binding<Bool>) {
+        _viewModel = StateObject(wrappedValue: GameViewModel(selectedLevel: selectedLevel, isSE: isSE))
+        _isLevelCompleted = isLevelCompleted
+    }
     
     var body: some View {
         ZStack {
@@ -26,7 +32,7 @@ struct GameView: View {
                         .font(.title2)
                         .foregroundColor(.white)
                     Spacer()
-                    Text("🏆 Score: \(game.score)")
+                    Text("🏆 Score: \(viewModel.score)")
                         .font(.title2)
                         .foregroundColor(.white)
                 }
@@ -55,7 +61,7 @@ struct GameView: View {
                            // let adjustedBoardHeight = cellHeight * CGFloat(game.rows) + (CGFloat(game.rows - 1) * spacing) + totalPadding * 2
 
                             // Використовуйте adjustedBoardWidth і adjustedBoardHeight для background
-                        GridView(game: game, namespace: animationNamespace, size: UIScreen.main.bounds.width - 40)
+                        GridView(game: viewModel, namespace: animationNamespace, size: UIScreen.main.bounds.width - 40)
                                 .padding(totalPadding) // Відстань між бордом та фоном
                                 .background(
                                     Image("bgfedfrg") // Ваше зображення фону
@@ -70,7 +76,7 @@ struct GameView: View {
                 }
                 
                 Button(action: {
-                    game.resetGame()
+                    viewModel.resetGame()
                     resetTimer()
                 }) {
                     Text("Restart")
@@ -113,7 +119,7 @@ struct GameView: View {
 
 
 struct GridView: View {
-    @ObservedObject var game: Match3GameViewModel
+    @ObservedObject var game: GameViewModel
     var namespace: Namespace.ID
     var size: CGFloat
     

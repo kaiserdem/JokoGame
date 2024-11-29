@@ -7,8 +7,8 @@ class MusicManager {
     private init() {}
     
     func playBackgroundMusic() {
-            guard let url = Bundle.main.url(forResource: "gamemusic", withExtension: "mp3") else {
-                print("File not found: gamemusic.mp3")
+            guard let url = Bundle.main.url(forResource: "joco-music", withExtension: "mp3") else {
+                print("File not found: joco-music.mp3")
                 return
             }
             do {
