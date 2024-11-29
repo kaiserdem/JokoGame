@@ -3,7 +3,7 @@ import SwiftUI
 class LevelsViewModel: ObservableObject {
     @Published var score: Int = 0
     @Published var levels: [GameLevel] = []
-    
+    @Published var totalCoins: Int = 0
     @Published var isDebugMode: Bool = false
     
     init() {
@@ -12,7 +12,6 @@ class LevelsViewModel: ObservableObject {
             isDebugMode = debugModeValue
         }
         
-        //print("Debug Mode is: \(isDebugMode)")
         getData()
         
         NotificationCenter.default.addObserver(forName: Notification.Name("UpdateLevels"), object: nil, queue: .main)  { [weak self] _ in
@@ -22,12 +21,15 @@ class LevelsViewModel: ObservableObject {
         }
         
     }
-    // кукуруза - свінью
-    // морква - лошадь
-    // 
     
     func getData() {
         levels = loadLevels()
+        
+        if let savedCoins = UserDefaults.standard.integer(forKey: "totalCoins") as? Int {
+            totalCoins = savedCoins
+            print("Loaded total Coins: \(totalCoins)")
+
+        }
        
         levels.forEach {
             print("scores To Win: \($0.scoresToWin), time:\($0.timePerRound), \($0.completed), index: \($0.backgroundIndex)")

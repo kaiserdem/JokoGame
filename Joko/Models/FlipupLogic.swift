@@ -13,41 +13,13 @@ enum FlipupLogic: Int, CaseIterable {
          level92, level93, level94, level95, level96, level97, level98, level99, level100
 
     func levelData() -> GameLevel {
-           let allImages = ImageFlipup.allCases
-           var selectedImages: [String] = []
-           var goalScores: [Int] = [0, 0, 0]
-
-           let imageCount: Int
-           switch self.rawValue {
-           case 0...9:
-               imageCount = 3
-               goalScores = [0, 0, 0]
-           case 10...29:
-               imageCount = 4
-               goalScores = [0, 0, 0]
-           default:
-               imageCount = 5
-               goalScores = [0, 0, 0,]
-           }
-
-           var usedIndexSet = Set<Int>()
-           while selectedImages.count < imageCount {
-               let randomIndex = Int(arc4random_uniform(UInt32(allImages.count)))
-               if !usedIndexSet.contains(randomIndex) {
-                   selectedImages.append(allImages[randomIndex].imageName)
-                   usedIndexSet.insert(randomIndex)
-               }
-           }
-           
-           let timePerRound = Int.random(in: 10...120)
-           let descriptions = ["1", "2", "2", "4", "5", "6"]
-           let backgroundIndex = descriptions.randomElement() ?? "No description available."
+        let backgroundIndex = ["1", "2", "2", "4", "5", "6"].randomElement() ?? "No description available."
         
         return GameLevel(id: self.rawValue,
-                         scoresToWin: 1000,
+                         scoresToWin: Int.random(in: 200...700),
                          backgroundIndex: backgroundIndex,
                          completed: false,
-                         timePerRound: timePerRound)
+                         timePerRound: Int.random(in: 40...120))
            
        }
 }

@@ -4,9 +4,12 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     let isLarge: Bool = UIScreen.main.bounds.height > 900
     let isSE: Bool = UIDevice.current.userInterfaceIdiom == .pad
+    
+    @State private var isMusicEnabled: Bool = false
+
     var body: some View {
         ZStack {
-            Image("Slot-2")
+            Image("bgLevel6")
                 .resizable()
                 .scaledToFill()
                 .edgesIgnoringSafeArea(.all)
@@ -22,15 +25,18 @@ struct SettingsView: View {
                 Spacer()
                 
                 VStack {
-                    
-                    Image("Frame 1171277324")
+                    //Frame 1171277336
+                    Image(isMusicEnabled ? "Frame 1171277324" : "Frame 1171277336")
                         .padding(.top, 40)
                         .padding(.bottom, 10)
                         .onTapGesture {
-                            MusicManager.shared.toggleMusic()
+                            isMusicEnabled = MusicManager.shared.toggleMusic()
+                        }
+                        .onAppear {
+                            isMusicEnabled = MusicManager.shared.audioPlayer?.isPlaying == true
                         }
                     
-                        Image("Frame 1171277320")
+                    Image("Frame 1171277320")
                     
                     
                         Image("Frame 1171277322")

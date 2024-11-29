@@ -1,4 +1,4 @@
-           
+
 import SwiftUI
 
 struct GameView: View {
@@ -31,6 +31,7 @@ struct GameView: View {
                 HStack {
                     
                     Button(action: {
+                        self.viewModel.resetGame()
                         self.presentationMode.wrappedValue.dismiss()
                     }) {
                         Image("Frame 1171277326")
@@ -98,9 +99,14 @@ struct GameView: View {
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                     }
-
-                    Spacer().frame(width: 30) // Відстань між елементами
-
+                    .onTapGesture {
+                        if viewModel.grass.0 > 0 {
+                            viewModel.useBonus(for: viewModel.grass.1)
+                        }
+                    }
+                    
+                    Spacer().frame(width: 30)
+                    
                     VStack {
                         Image("asdfgdfh02")
                         Text("\(viewModel.carrot.0) Carrot")
@@ -108,9 +114,14 @@ struct GameView: View {
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                     }
+                    .onTapGesture {
+                        if viewModel.carrot.0 > 0 {
+                            viewModel.useBonus(for: viewModel.carrot.1)
+                        }
+                    }
                     
-                    Spacer().frame(width: 30) // Відстань між елементами
-
+                    Spacer().frame(width: 30)
+                    
                     VStack {
                         Image("asdfgdfh01")
                         Text("\(viewModel.corn.0) Corn")
@@ -118,16 +129,38 @@ struct GameView: View {
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                     }
+                    .onTapGesture {
+                        if viewModel.corn.0 > 0 {
+                            viewModel.useBonus(for: viewModel.corn.1)
+                        }
+                    }
                 }
                 .padding(.bottom, 100)
-
+                
+                
                 ////////////////////////////
             }
             .onAppear {
-                        viewModel.onGameEnd = {
-                            self.presentationMode.wrappedValue.dismiss() // Закриває вью
+                viewModel.onGameEnd = {
+                    self.presentationMode.wrappedValue.dismiss() // Закриває вью
+                }
+            }
+            if viewModel.showingWinningFrame {
+                Image("Frame 19064")
+                    .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity) // Займає весь простір
+                            .clipped() // Вирізає все, що виходить за межі
+                            .edgesIgnoringSafeArea(.all)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            
+                            viewModel.showingWinningFrame = false
+                            viewModel.completeLevel()
+                            self.presentationMode.wrappedValue.dismiss()
                         }
                     }
+            }
         }
     }
 }

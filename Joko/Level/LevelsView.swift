@@ -19,6 +19,13 @@ struct LevelsView: View {
         ZStack {
             backgroundView()
             
+            listView()
+                .padding(.top, 40)
+                .padding(.bottom, 40)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.clear)
+            
+            
             VStack {
                 
                 HStack {
@@ -31,7 +38,14 @@ struct LevelsView: View {
                         .padding(.top, isSE ? 20 : 0)
                     Spacer()
                     
-                    Image("Frame 1171277335")
+                    ZStack {
+                        Image("Frame 1171277335")
+                        Text("\(viewModel.totalCoins)")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(x: 10, y: 3)
+                    }
                     Spacer()
                     Spacer()
                 }
@@ -44,11 +58,6 @@ struct LevelsView: View {
             .navigationBarBackButtonHidden(true)
             
             
-            listView()
-                .padding(.top, 120)
-                .padding(.bottom, 40)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.clear)
             
             
         }

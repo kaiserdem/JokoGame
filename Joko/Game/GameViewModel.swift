@@ -1,16 +1,18 @@
 
 import SwiftUI
+import Combine
 
 class GameViewModel: ObservableObject {
     @Published var grid: [[Ball]]
-   // @Published var score: Int = 0
 
     let rows: Int =  6
     let columns: Int = 5
     let imageNames: [String] = ["asdfgdfh01", "asdfgdfh02", "asdfgdfh03", "asdfgdfh04", "asdfgdfh05", "asdfgdfh06", "asdfgdfh07", "asdfgdfh08"]
     private var hintTimer: Timer?
     private var hintVisible = false
-    
+    var totalCoins: Int = UserDefaults.standard.integer(forKey: "totalCoins")
+    @Published var showingWinningFrame: Bool = false
+
     @Published var selectedLevel: GameLevel
     
     
@@ -23,6 +25,8 @@ class GameViewModel: ObservableObject {
     @Published var currentLevelScores: Int = 0
 
     var onGameEnd: (() -> Void)?
+    private var cancellables: Set<AnyCancellable> = []
+
 
     init(selectedLevel: GameLevel, isSE: Bool) {
         self.selectedLevel = selectedLevel
@@ -32,6 +36,69 @@ class GameViewModel: ObservableObject {
         currentLevelScores = selectedLevel.scoresToWin
         
         resetGame()
+        
+        
+        self.$currentLevelScores
+            .sink { newValue in
+                if newValue <= 0 {
+                    self.handleWin()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    
+    func handleWin() {
+            showingWinningFrame = true
+            completeLevel()
+            
+            // Здесь мы можем использовать DispatchQueue для временной задержки, если это необходимо
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.showingWinningFrame = false
+                self.resetGame()
+            }
+        }
+
+        func completeLevel() {
+            totalCoins += selectedLevel.scoresToWin
+            UserDefaults.standard.set(totalCoins, forKey: "totalCoins")
+            var levels = loadLevels()
+            
+            if let index = levels.firstIndex(where: { $0.id == selectedLevel.id }) {
+                levels[index].completed = true
+                saveLevels(levels)
+            }
+            
+        }
+
+        func saveLevels(_ levels: [GameLevel]) {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(levels) {
+                UserDefaults.standard.set(encoded, forKey: "SavedGameLevels")
+            }
+            NotificationCenter.default.post(name: Notification.Name("UpdateLevels"), object: nil)
+
+        }
+
+        private func loadLevels() -> [GameLevel] {
+            if let data = UserDefaults.standard.data(forKey: "SavedGameLevels") {
+                do {
+                    return try JSONDecoder().decode([GameLevel].self, from: data)
+                } catch {
+                    print("Ошибка декодирования: \(error)")
+                    return []
+                }
+            } else {
+                let items = FlipupLogic.allCases.map { $0.levelData() }
+                saveLevels(items)
+                return items
+            }
+            
+        }
+
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Timer
@@ -113,6 +180,55 @@ class GameViewModel: ObservableObject {
 
     func hasMatches() -> Bool {
         return !findMatches().isEmpty
+    }
+    
+    func useBonus(for imageName: String) {
+        if imageName == grass.1 {
+            grass.0 -= 1
+        } else if imageName == carrot.1 {
+            carrot.0 -= 1
+        } else if imageName == corn.1 {
+            corn.0 -= 1
+        }
+       
+        switch imageName {
+        case "asdfgdfh08": // трава
+            removeAllMatchingImage(named: "asdfgdfh03")
+            
+        case "asdfgdfh02": // морковь
+            removeAllMatchingImage(named: "asdfgdfh07")
+            
+        case "asdfgdfh01": // кукуруза
+            removeAllMatchingImage(named: "asdfgdfh05")
+
+        default:
+            break
+        }
+
+    }
+
+    func removeAllMatchingImage(named imageName: String) {
+        var matches = Set<CellPosition>()
+
+        for row in 0..<rows {
+            for column in 0..<columns {
+                if grid[row][column].imageName == imageName {
+                    matches.insert(CellPosition(row: row, column: column))
+                }
+            }
+        }
+
+        if !matches.isEmpty {
+            currentLevelScores -= 60
+
+            
+            for position in matches {
+                grid[position.row][position.column].imageName = "emptyImageName"
+            }
+
+            collapseGrid()
+            fillEmptyCells()
+        }
     }
 
     func removeMatches() {

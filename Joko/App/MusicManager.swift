@@ -14,7 +14,7 @@ class MusicManager {
             do {
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.numberOfLoops = -1
-                audioPlayer?.volume = Float(UserDefaults.standard.float(forKey: "musicVolume")) // Завантаження гучності з UserDefaults
+                audioPlayer?.volume = 0.3
                 audioPlayer?.prepareToPlay() // Додано prepareToPlay()
                 audioPlayer?.play()
             } catch {
@@ -25,6 +25,16 @@ class MusicManager {
     func stopBackgroundMusic() {
         audioPlayer?.stop()
         audioPlayer = nil
+    }
+    
+    func toggleMusic() -> Bool {
+        if audioPlayer?.isPlaying == true {
+            stopBackgroundMusic()
+            return false
+        } else {
+            playBackgroundMusic()
+            return true 
+        }
     }
     
     func toggleMusic() {
