@@ -35,7 +35,7 @@ struct LevelsView: View {
                     }) {
                         Image("Frame 1171277326")
                     }
-                        .padding(.top, isSE ? 20 : 0)
+                        .padding(.top, isSE ? 0 : 0)
                     Spacer()
                     
                     ZStack {

@@ -18,8 +18,8 @@ struct SettingsView: View {
                 HStack {
                     
                     closeButton()
-                        .padding(.top, 60)
-                    
+                        .padding(.top, isSE ? 20 : 40)
+
                     Spacer()
                 }
                 Spacer()
@@ -59,7 +59,7 @@ struct SettingsView: View {
             dismiss()
         }) {
             Image("Group 19071")
-               .padding(.trailing, 40)
+                .padding(.top, isSE ? 20 : 40)
 
         }
     }

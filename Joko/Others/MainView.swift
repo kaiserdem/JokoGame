@@ -27,12 +27,14 @@ struct MainView: View {
                                 Image("Frame 5")
                             }
                         }
+                        .padding(.bottom, 30)
 
                         VStack {
                             NavigationLink(destination:LevelsView()) {
                                 Image("Frame 1171277312")
                             }
                         }
+                        
                     }
                     .padding(.bottom, isSE ? 140 : 50)
                 }

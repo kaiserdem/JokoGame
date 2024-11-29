@@ -36,10 +36,12 @@ struct GameView: View {
                     }) {
                         Image("Frame 1171277326")
                     }
-                    .padding(.top, isSE ? 20 : 0)
-                    Spacer()
+                    .padding(.top, isSE ? 65 : 0)
                     
-                    Image("Joko logo 1")
+                    Spacer()
+                    if !isSE {
+                        Image("Joko logo 1")
+                    }
                     Spacer()
                     Spacer()
                 }
@@ -135,7 +137,7 @@ struct GameView: View {
                         }
                     }
                 }
-                .padding(.bottom, 100)
+                .padding(.bottom, UIScreen.main.hasNotch ? 50 : 100)
                 
                 
                 ////////////////////////////

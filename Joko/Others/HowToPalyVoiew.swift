@@ -18,7 +18,7 @@ struct HowToPalyVoiew: View {
                 HStack {
                     
                     closeButton()
-                        .padding(.top, 60)
+                        .padding(.top, isSE ? 20 : 40)
                     
                     Spacer()
                 }
@@ -28,9 +28,7 @@ struct HowToPalyVoiew: View {
                     VStack(spacing: 20) {
                         ForEach(items, id: \.self) { item in
                             Image(item)
-                                //.resizable()
-                                //.scaledToFit()
-                                //.frame(height: 100)
+                              
                         }
                     }
                 }
@@ -48,7 +46,7 @@ struct HowToPalyVoiew: View {
             dismiss()
         }) {
             Image("Group 19071-2")
-               //.padding(.trailing, 0)
+                .padding(.top, isSE ? 20 : 40)
 
         }
     }
