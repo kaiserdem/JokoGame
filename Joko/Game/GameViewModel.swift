@@ -13,9 +13,11 @@ class GameViewModel: ObservableObject {
     private var hintTimer: Timer?
     private var hintVisible = false
     
-    
+    @Published var selectedLevel: GameLevel
+
 
     init(selectedLevel: GameLevel, isSE: Bool) {
+        self.selectedLevel = selectedLevel
         self.grid = []
         resetGame()
     }

@@ -6,6 +6,7 @@ struct LevelsView: View {
     @StateObject private var viewModel = LevelsViewModel()
     
     @State private var selectedLevel: GameLevel? = nil
+    @State private var levelIndex = 0
     @State private var isLevelCompleted: Bool = false
 
     @State private var nextLevelToPlay: GameLevel? = nil
@@ -44,7 +45,7 @@ struct LevelsView: View {
             
             
             listView()
-                .padding(.top, 130)
+                .padding(.top, 120)
                 .padding(.bottom, 0)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.clear)
@@ -59,34 +60,47 @@ struct LevelsView: View {
         ScrollView(.vertical, showsIndicators: true) {
             LazyVStack(alignment: .center, spacing: nil) {
                 ForEach(Array(viewModel.levels.enumerated()), id: \.element.id) { index, level in
-                        VStack(spacing: 0) {
-                            ZStack {
-                                if index < 1 || level.completed {
-                                    Image("openLevel\(level.backgroundIndex)")
-                                        .offset(y: -75)
-                                } else {
-                                    Image("openLevel\(level.backgroundIndex)")
-                                        .offset(y: -75)
-                                }
+                    VStack(spacing: -50) {
+                        ZStack {
+                            if level.completed {
+                                Image("completeLevel\(level.backgroundIndex)")
                                 
-                                Text("completeLevel\(level.backgroundIndex)")
-                                    .font(.custom(AppFlipupConstants.fontName1, size: 30))
+                                Text("\(index + 1)")
+                                    .font(.custom(AppFlipupConstants.fontName1, size: 40))
                                     .foregroundColor(.white)
                                     .multilineTextAlignment(.center)
-                                    //.padding(.horizontal, 20)
+                                    .offset(y: 28)
+
+                                
+                            } else {
+                                if index == 0 || (index > 0 && viewModel.levels[index - 1].completed) {
+                                    Image("openLevel\(level.backgroundIndex)")
+                                    
+                                    Text("\(index + 1)")
+                                        .font(.custom(AppFlipupConstants.fontName1, size: 40))
+                                        .foregroundColor(.white)
+                                        .multilineTextAlignment(.center)
+                                        .offset(y: 28)
+                                    
+                                } else {
+                                    Image("closedLevel\(level.backgroundIndex)")
+                                }
                             }
                         }
-                        .frame(width: 248, height: 300)
-                        .background(Color.clear)
-                        .cornerRadius(8)
-                        .onTapGesture {
-                            if level.completed[0] != 0 || index == 0 {
-                                selectedLevel = level
-                            }
-                        }
-                        .rotationEffect(Angle(degrees: 180))
-                        .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
                     }
+                    .frame(width: 122, height: 139)
+                    .onTapGesture {
+                        if level.completed || index == 0 || (index > 0 && viewModel.levels[index - 1].completed) {
+                            levelIndex = index
+                            selectedLevel = level
+                        }
+                    }
+                    .rotationEffect(Angle(degrees: 180))
+                    .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                    .offset(x: index % 2 == 0 ? -80 : 80)
+                    
+                }
+
             }
             .padding(.top, 20)
             .padding(.bottom, 40)
@@ -94,15 +108,8 @@ struct LevelsView: View {
         .rotationEffect(Angle(degrees: 180))
         .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
         .fullScreenCover(item: $selectedLevel) { level in
-            GameView(selectedLevel: level, isSE: isSE, isLevelCompleted: $isLevelCompleted)
+            GameView(selectedLevel: level, isSE: isSE, isLevelCompleted: $isLevelCompleted, levelIndex: levelIndex)
         }
-    }
-
-    
-    func levelToPlay(_ level: GameLevel) -> GameLevel {
-        var levelToPlay = level
-        levelToPlay.completed = Array(repeating: 0, count: levelToPlay.completed.count)
-        return levelToPlay
     }
     
     // MARK: - Background View

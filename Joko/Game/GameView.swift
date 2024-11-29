@@ -1,4 +1,10 @@
 
+//                    Text("⏱ Time: \(timeRemaining)")
+//                        .font(.title2)
+//                        .foregroundColor(.white)
+//                    Spacer()
+//                    Text("🏆 Score: \(viewModel.score)")
+                   
 import SwiftUI
 
 struct GameView: View {
@@ -7,87 +13,126 @@ struct GameView: View {
     @State private var timer: Timer?
     @Namespace private var animationNamespace
     @Binding var isLevelCompleted: Bool
-
-    init(selectedLevel: GameLevel, isSE: Bool, isLevelCompleted: Binding<Bool>) {
+    @Environment(\.presentationMode) var presentationMode
+    private var levelIndex: Int
+    
+    var grass = 0
+    var carrot = 0
+    var corn = 0
+    
+    
+    private let isSE: Bool = UIScreen.main.bounds.height < 700
+    
+    
+    init(selectedLevel: GameLevel, isSE: Bool, isLevelCompleted: Binding<Bool>, levelIndex: Int) {
+        let l = levelIndex + 1
+        self.levelIndex = l
         _viewModel = StateObject(wrappedValue: GameViewModel(selectedLevel: selectedLevel, isSE: isSE))
         _isLevelCompleted = isLevelCompleted
     }
     
     var body: some View {
         ZStack {
-            Image("Slot-1") // Задаємо ваше зображення фону
+            Image("bgLevel\(viewModel.selectedLevel.backgroundIndex)")
                 .resizable()
-                .scaledToFill() // Заповнюємо доступний простір
+                .scaledToFill()
                 .ignoresSafeArea()
-                .opacity(0.5) // Можна налаштувати прозорість, якщо потрібно
-            
             VStack {
-                Text("✨ Match 3 Game ✨")
-                    .font(.custom("Chalkduster", size: 32))
-                    .foregroundColor(.white)
-                    .padding()
                 
                 HStack {
-                    Text("⏱ Time: \(timeRemaining)")
-                        .font(.title2)
-                        .foregroundColor(.white)
+                    
+                    Button(action: {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image("Frame 1171277326")
+                    }
+                    .padding(.top, isSE ? 20 : 0)
                     Spacer()
-                    Text("🏆 Score: \(viewModel.score)")
-                        .font(.title2)
-                        .foregroundColor(.white)
+                    
+                    Image("Joko logo 1")
+                    Spacer()
+                    Spacer()
                 }
-                .padding(.horizontal)
+                .padding(.leading, 0)
+                .padding(.top, isSE ? 10 : 40)
                 
                 Spacer()
-                Spacer(minLength: 100)
+                ///////////////////////
+                
+                HStack(alignment: .center, spacing: 20) {
+                    
+                    
+                    ZStack {
+                        Image("Group 19095")
+                        Text("lvl \(levelIndex)")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(x: 10, y: 4)
+                    }
+                    
+                    ZStack {
+                        Image("Frame 1171277331")
+                        Text("\("index")")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(y: 8)
+                    }
+                    
+                    ZStack {
+                        Image("Group 19094-2")
+                        Text("\("index" )")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(x: 10, y: 4)
+                    }
+                    
+                }
+                /////////////////////////////
                 
                 HStack(alignment: .center) {
-                    
-                    Spacer()
-
-                    
                     GeometryReader { geometry in
-                        let totalPadding: CGFloat = 4 // Відступ з усіх боків
-                            let spacing: CGFloat = 3 // Відстань між клітинками
-//                            let boardWidth = min(geometry.size.width - totalPadding * 2, geometry.size.height) * 0.8 // Використовуйте ширину з відступами
-//                            let boardHeight = min(geometry.size.height - totalPadding * 2, geometry.size.width) * 0.8 // Використовуйте висоту з відступами
-
-                            // Обчислення cellSize
-                            //let cellWidth = (boardWidth - (CGFloat(game.columns - 1) * spacing)) / CGFloat(game.columns) // Розмір клітинки по ширині
-                            //let cellHeight = (boardHeight - (CGFloat(game.rows - 1) * spacing)) / CGFloat(game.rows) // Розмір клітинки по висоті
-
-                            // Обчислення adjustedBoardSize для ширини та висоти
-                            //let adjustedBoardWidth = cellWidth * CGFloat(game.columns) + (CGFloat(game.columns - 1) * spacing) + totalPadding * 2
-                           // let adjustedBoardHeight = cellHeight * CGFloat(game.rows) + (CGFloat(game.rows - 1) * spacing) + totalPadding * 2
-
-                            // Використовуйте adjustedBoardWidth і adjustedBoardHeight для background
-                        GridView(game: viewModel, namespace: animationNamespace, size: UIScreen.main.bounds.width - 40)
-                                .padding(totalPadding) // Відстань між бордом та фоном
-                                .background(
-                                    Image("bgfedfrg") // Ваше зображення фону
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: UIScreen.main.bounds.width - 20, height: UIScreen.main.bounds.width + 330) // Встановлення розміру фону
-                                        .clipped() // Обрізаємо, щоб відповідати розмірам
-                                )
-                                .cornerRadius(25)
-                                .shadow(radius: 5)
+                        let totalPadding: CGFloat = 4
+                        
+                        GridView(game: viewModel, namespace: animationNamespace, size: UIScreen.main.bounds.width )
+                            .padding(totalPadding)
                     }
                 }
-                
-                Button(action: {
-                    viewModel.resetGame()
-                    resetTimer()
-                }) {
-                    Text("Restart")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding()
-                        .background(LinearGradient(gradient: Gradient(colors: [.yellow, .orange]), startPoint: .leading, endPoint: .trailing))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
+                //////////////////////////////
+                HStack(alignment: .center, spacing: 30) {
+                    VStack {
+                        Image("Frame 1171277315")
+                        Text("\(grass) Grass")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(x: 10, y: 4)
+                    }
+                    
+                    VStack {
+                        Image("Frame 1171277317")
+                        Text("\(carrot) Carrot")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(x: 10, y: 4)
+                    }
+                    
+                    VStack {
+                        Image("Frame 1171277319")
+                        Text("\(corn) Corn")
+                            .font(.custom(AppFlipupConstants.fontName1, size: 15))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .offset(x: 10, y: 4)
+                    }
+                    
                 }
+                .padding(.bottom, 100)
+
+                ////////////////////////////
             }
         }
         .onAppear {
@@ -124,42 +169,52 @@ struct GridView: View {
     var size: CGFloat
     
     var body: some View {
-        let cellSize = (size - (CGFloat(game.columns) * 3)) / CGFloat(game.columns) // Враховуйте padding між клітинками
+        let cellSize = (size - (CGFloat(game.columns) * 3)) / CGFloat(game.columns) - 12// Враховуйте padding між клітинками
         
-        VStack(spacing: 0) {
-            ForEach(0..<game.rows, id: \.self) { row in
-                HStack(spacing: 0) {
-                    ForEach(0..<game.columns, id: \.self) { column in
-                        let ball = game.grid[row][column]
-                        Image(ball.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cellSize, height: cellSize)
-                            .shadow(radius: 3)
-                            .padding(3) // Внутрішній відступ
-                            .overlay(
-                                ZStack {
-                                    if ball.isShaking {
-                                        Circle()
-                                            .stroke(Color.white, lineWidth: 2)
-                                            .modifier(ShakeEffect(shakes: 2))
+        HStack {
+            Spacer()
+            
+            VStack(spacing: 0) {
+                ForEach(0..<game.rows, id: \.self) { row in
+                    HStack(spacing: 0) {
+                        ForEach(0..<game.columns, id: \.self) { column in
+                            let ball = game.grid[row][column]
+                            Image(ball.imageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: cellSize, height: cellSize)
+                                .shadow(radius: 3)
+                                .padding(5)
+                                .overlay(
+                                    ZStack {
+                                        if ball.isShaking {
+                                            Circle()
+                                                .stroke(Color.white, lineWidth: 2)
+                                                .modifier(ShakeEffect(shakes: 2))
+                                        }
+                                        if ball.isHinted {
+                                            Circle()
+                                                .stroke(Color.yellow, lineWidth: 3)
+                                                .animation(.easeInOut)
+                                        }
                                     }
-                                    if ball.isHinted {
-                                        Circle()
-                                            .stroke(Color.yellow, lineWidth: 3)
-                                            .animation(.easeInOut)
-                                    }
+                                )
+                                .matchedGeometryEffect(id: ball.id, in: namespace)
+                                .onTapGesture {
+                                    game.selectCell(row: row, column: column)
                                 }
-                            )
-                            .matchedGeometryEffect(id: ball.id, in: namespace)
-                            .onTapGesture {
-                                game.selectCell(row: row, column: column)
-                            }
-                            .transition(.move(edge: .top))
-                            .animation(.spring(), value: ball.id)
+                                .transition(.move(edge: .top))
+                                .animation(.spring(), value: ball.id)
+                        }
                     }
                 }
             }
+            .background(Color.yellow.opacity(0.7))
+            .shadow(radius: 25)
+            .cornerRadius(20)
+            
+            Spacer()
+            
         }
     }
 }
