@@ -101,63 +101,40 @@ struct GameView: View {
                     }
                 }
                 //////////////////////////////
-                HStack(alignment: .center, spacing: 30) {
+                HStack(alignment: .center) {
                     VStack {
                         Image("Frame 1171277315")
                         Text("\(grass) Grass")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
-                            .offset(x: 10, y: 4)
                     }
-                    
+
+                    Spacer().frame(width: 30) // Відстань між елементами
+
                     VStack {
                         Image("Frame 1171277317")
                         Text("\(carrot) Carrot")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
-                            .offset(x: 10, y: 4)
                     }
                     
+                    Spacer().frame(width: 30) // Відстань між елементами
+
                     VStack {
                         Image("Frame 1171277319")
                         Text("\(corn) Corn")
                             .font(.custom(AppFlipupConstants.fontName1, size: 15))
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
-                            .offset(x: 10, y: 4)
                     }
-                    
                 }
                 .padding(.bottom, 100)
 
                 ////////////////////////////
             }
         }
-        .onAppear {
-            startTimer()
-        }
-        .onDisappear {
-            timer?.invalidate()
-        }
-    }
-    
-    func startTimer() {
-        timeRemaining = 100
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            if self.timeRemaining > 0 {
-                self.timeRemaining -= 1
-            } else {
-                timer?.invalidate()
-                // Actions when the game ends
-            }
-        }
-    }
-    
-    func resetTimer() {
-        timer?.invalidate()
-        startTimer()
     }
 }
 

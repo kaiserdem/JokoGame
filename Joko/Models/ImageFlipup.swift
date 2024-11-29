@@ -3,7 +3,7 @@ import Foundation
 enum ImageFlipup: String, CaseIterable {
 
     
-    case Flipup6 = "itemfdsdf6" //
+    case Flipup6 = "itemfdsdf6" 
     case Flipup7 = "itemfdsdf7" //
     case Flipup8 = "itemfdsdf8" //
     case Flipup9 = "itemfdsdf9" //

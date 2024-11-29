@@ -46,7 +46,7 @@ struct LevelsView: View {
             
             listView()
                 .padding(.top, 120)
-                .padding(.bottom, 0)
+                .padding(.bottom, 40)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.clear)
             
@@ -102,8 +102,7 @@ struct LevelsView: View {
                 }
 
             }
-            .padding(.top, 20)
-            .padding(.bottom, 40)
+
         }
         .rotationEffect(Angle(degrees: 180))
         .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
